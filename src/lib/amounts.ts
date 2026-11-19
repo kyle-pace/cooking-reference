@@ -29,7 +29,8 @@ export type Unit = 'ml' | keyof typeof ML_PER;
 export function volume(ml: number): string {
   if (ml < 12.5) return `${fraction(ml / ML_PER.tsp)} tsp`;
   const rounded = ml < 100 ? Math.round(ml) : Math.round(ml / 5) * 5;
-  const spoon = ml < 60 ? `${fraction(ml / ML_PER.tbsp)} tbsp` : `${fraction(ml / ML_PER.cup)} cup`;
+  const cups = ml / ML_PER.cup;
+  const spoon = ml < 60 ? `${fraction(ml / ML_PER.tbsp)} tbsp` : `${fraction(cups)} ${cups > 1.125 ? 'cups' : 'cup'}`;
   return `${rounded} ml (${spoon})`;
 }
 

@@ -179,9 +179,22 @@
 }
 
 .blend-amounts li {
-  display: grid;
-  grid-template-columns: minmax(7rem, auto) 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--space-1) var(--space-4);
+}
+
+.blend-amounts li > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.blend-amounts .amt {
+  flex: 0 0 9rem;
+}
+
+.blend-amounts li > span:last-child {
+  flex: 1 1 12rem;
 }
 
 .blend-amounts .amt {
