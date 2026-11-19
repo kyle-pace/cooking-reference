@@ -1,0 +1,41 @@
+---
+import LabLayout from 'kp-design/layouts/LabLayout.astro';
+import Sections from '../../../components/Sections.astro';
+import { ratios } from '../../../data/foundations';
+import '../../../styles/theme.css';
+---
+
+<LabLayout
+  lab={{ name: 'Cooking reference', href: '/cooking-reference/' }}
+  about="/cooking-reference/about/"
+  title="Ratios"
+  description="The proportions behind the classics, so you can make them without a recipe."
+  image="/cooking-reference/og.png"
+  imageAlt="Cooking reference: flavor pairings, ratios and spice blends. A lab on kylepace.dev."
+  themeColor={{ light: '#f2f5f1', dark: '#131917' }}
+>
+  <div class="lab-page">
+    <h1 class="title">Ratios</h1>
+    <Sections current="ratios" />
+    <ul class="ruled">
+      {
+        ratios.map((r) => (
+          <li>
+            <h2>
+              <a href={`/cooking-reference/ratios/${r.slug}/`}>{r.name}</a>
+            </h2>
+            <p>{r.summary}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="soon">More to come: pie dough, bread, custard, brine, quick pickles and rice.</p>
+  </div>
+</LabLayout>
+
+<style>
+  .soon {
+    color: var(--ink-muted);
+    margin-top: var(--space-6);
+  }
+</style>

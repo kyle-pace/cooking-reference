@@ -1,0 +1,26 @@
+---
+// The lab's three parts, under the title on every page but About.
+interface Props {
+  current: 'pairings' | 'ratios' | 'blends';
+}
+const { current } = Astro.props;
+const links = [
+  { key: 'pairings', name: 'Pairings', href: '/cooking-reference/' },
+  { key: 'ratios', name: 'Ratios', href: '/cooking-reference/ratios/' },
+  { key: 'blends', name: 'Spice blends', href: '/cooking-reference/blends/' },
+] as const;
+---
+
+<nav aria-label="Cooking reference">
+  <ul class="sections">
+    {
+      links.map((l) => (
+        <li>
+          <a href={l.href} aria-current={l.key === current ? 'page' : undefined}>
+            {l.name}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

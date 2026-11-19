@@ -1,0 +1,43 @@
+---
+// "Go further": pairings for the ingredients on the page, recipes on Findish, and books.
+interface Props {
+  foundation: string;
+  ingredients: { name: string; id: string }[];
+  findish: { label: string; query: string };
+  reading: { title: string; author: string }[];
+}
+const { foundation, ingredients, findish, reading } = Astro.props;
+---
+
+<section aria-labelledby="further-h" data-foundation={foundation}>
+  <h2 id="further-h">Go further</h2>
+  <ul class="ruled">
+    {
+      ingredients.length > 0 && (
+        <li>
+          <h3>What goes with them</h3>
+          <p>
+            {ingredients.map((g, i) => (
+              <>
+                <a href={`/cooking-reference/#${g.id}`} data-out-link="pairings">{g.name}</a>
+                {i < ingredients.length - 2 ? ', ' : i === ingredients.length - 2 ? ' or ' : ''}
+              </>
+            ))}
+          </p>
+        </li>
+      )
+    }
+    <li>
+      <h3><a href={`https://findish.now/?${findish.query}`} data-out-link="findish">{findish.label}</a></h3>
+      <p>Recipes from independent cooks, each linking to the original.</p>
+    </li>
+    {
+      reading.length > 0 && (
+        <li>
+          <h3>Books on this</h3>
+          <p>{reading.map((b, i) => <><cite>{b.title}</cite> by {b.author}{i < reading.length - 1 ? '; ' : '.'}</>)}</p>
+        </li>
+      )
+    }
+  </ul>
+</section>

@@ -2,13 +2,13 @@
   // Cloudflare Workers config. The Astro adapter fills in the entry point and static
   // assets at build time; settings here are merged into that.
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "lab-slug",
+  "name": "cooking-reference",
   "compatibility_date": "2026-11-01",
   "observability": { "enabled": true },
-  // Claims kylepace.dev/lab-slug on the hub's domain. Routes win over the hub's
+  // Claims kylepace.dev/cooking-reference on the hub's domain. Routes win over the hub's
   // Custom Domain, so only these paths reach this Worker.
   "routes": [
-    { "pattern": "kylepace.dev/lab-slug", "zone_name": "kylepace.dev" },
-    { "pattern": "kylepace.dev/lab-slug/*", "zone_name": "kylepace.dev" }
+    { "pattern": "kylepace.dev/cooking-reference", "zone_name": "kylepace.dev" },
+    { "pattern": "kylepace.dev/cooking-reference/*", "zone_name": "kylepace.dev" }
   ]
 }

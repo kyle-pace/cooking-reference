@@ -1,0 +1,87 @@
+---
+// One spice blend: what it is, amounts, method, how it varies, make or buy, and uses.
+import LabLayout from 'kp-design/layouts/LabLayout.astro';
+import Sections from '../../../components/Sections.astro';
+import Further from '../../../components/Further.astro';
+import { blends, type Blend } from '../../../data/foundations';
+import '../../../styles/theme.css';
+import '../../../styles/foundation.css';
+
+export function getStaticPaths() {
+  return blends.map((b) => ({ params: { slug: b.slug }, props: { b } }));
+}
+const { b } = Astro.props as { b: Blend };
+const own = b.id ? [{ name: b.name.toLowerCase(), id: b.id }] : [];
+const parts = b.amounts.filter((a) => a.ingredient.id).map((a) => ({ name: a.ingredient.name.replace(/, .*/, ''), id: a.ingredient.id! }));
+---
+
+<LabLayout
+  lab={{ name: 'Cooking reference', href: '/cooking-reference/' }}
+  about="/cooking-reference/about/"
+  title={`${b.name}: how to make it`}
+  description={b.summary}
+  image="/cooking-reference/og.png"
+  imageAlt="Cooking reference: flavor pairings, ratios and spice blends. A lab on kylepace.dev."
+  themeColor={{ light: '#f2f5f1', dark: '#131917' }}
+>
+  <article class="lab-page foundation" data-foundation={b.slug}>
+    <h1 class="title">{b.name}</h1>
+    <Sections current="blends" />
+
+    <section aria-labelledby="what-h">
+      <h2 id="what-h" class="sr">What it is</h2>
+      <p class="summary">{b.summary}</p>
+      {b.about.map((t) => <p>{t}</p>)}
+      <p>More about <a href={b.cuisine.href} data-out-link="world-cuisine">{b.cuisine.name}</a> cooking on World cuisine.</p>
+    </section>
+
+    <section aria-labelledby="amounts-h">
+      <h2 id="amounts-h">Amounts</h2>
+      <p>Makes {b.makes}. All whole spices unless it says otherwise.</p>
+      <ul class="ruled blend-amounts">
+        {
+          b.amounts.map((a) => (
+            <li>
+              <span class="amt num">{a.amount}</span>
+              <span>
+                {a.ingredient.name}
+                {a.note && <small>{a.note}</small>}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section aria-labelledby="method-h">
+      <h2 id="method-h">Method</h2>
+      <ol class="method">{b.method.map((t) => <li>{t}</li>)}</ol>
+    </section>
+
+    <section aria-labelledby="varies-h">
+      <h2 id="varies-h">How it varies</h2>
+      {b.varies.map((t) => <p>{t}</p>)}
+    </section>
+
+    <section aria-labelledby="buy-h">
+      <h2 id="buy-h">Make it or buy it</h2>
+      {b.makeOrBuy.map((t) => <p>{t}</p>)}
+    </section>
+
+    <section aria-labelledby="uses-h">
+      <h2 id="uses-h">Ways to use it</h2>
+      <ul class="uses">{b.uses.map((t) => <li>{t}</li>)}</ul>
+    </section>
+
+    <Further
+      foundation={b.slug}
+      ingredients={[...own, ...parts]}
+      findish={{ label: `Find recipes with ${b.name.toLowerCase()} on Findish`, query: b.id ? `with=${b.id}` : `q=${encodeURIComponent(b.name)}` }}
+      reading={b.reading}
+    />
+  </article>
+</LabLayout>
+
+<script>
+  import '../../../scripts/links';
+</script>

@@ -1,55 +1,67 @@
-# Design plan: Lab Name
+# Design plan: Cooking reference
 
-Lab Name is a standalone lab on kylepace.dev (kp-design's `LabLayout`). This is the plan for
-its own look. The tokens live in `src/styles/theme.css`. Write this before styling anything,
-and take the ideas from the subject's own world, not from other websites.
+Cooking reference is a standalone lab on kylepace.dev (kp-design's `LabLayout`). The tokens live
+in `src/styles/theme.css`.
 
 ## Subject and audience
 
-What is it, and who is it for? One or two sentences.
+Reference for cooking without a recipe: what goes with what (pairings drawn from the recipes
+Findish searches), the ratios behind the classics, and spice blends. For home cooks who already
+cook a bit and want to understand why things work, so they can improvise.
 
 ## Concept
 
-The real-world thing the page borrows its look from (the skill tree is a character sheet on
-graph paper; the transit map is a transit line). What does it look like in dark mode?
+The reference chart taped inside a kitchen cupboard door: a printed sheet on pale card stock,
+ruled lines, one strong ink color for the numbers that matter, a second for links. Dark mode is
+the same chart under a dim kitchen light: dark green-black paper, pale ink.
 
 ## The one bold element
 
-The single place this lab spends its boldness. Everything else stays quiet.
+Proportion bars. On the pairings list, a beet bar shows how strong each pairing is. On a ratio
+page, one wide bar split into parts ("3 parts oil", "1 part acid") is the biggest thing on the
+page, labeled in text so it never relies on color. Everything else is plain ruled lists.
 
 ## Color
 
-4 to 6 named colors, light and dark. Every text pair is at least 4.5:1 in both modes; borders
-and icons at least 3:1.
+Carried over from the Flavor pairings test page (November 2026), which Kyle has already seen.
 
 | Name | Light | Dark | Use |
 | --- | --- | --- | --- |
-| | | | Page |
-| | | | Text |
-| | | | Secondary text |
-| | | | The bold color |
+| Paper | #f2f5f1 | #131917 | Page |
+| Sheet | #ffffff | #1b2320 | Inputs and raised panels |
+| Ink | #1b2420 | #e8eee9 | Text |
+| Quiet | #55625b | #a3b1a9 | Secondary text (5.9:1 light, 7.4:1 dark) |
+| Rule | #c9d3cc | #35423c | Decorative lines only |
+| Beet | #8a1f4f | #ee8db4 | The bars and the current section |
+| Leek | #2f6240 | #93cfa3 | Links and focus rings |
 
 ## Type
 
-Atkinson Hyperlegible Next for everything (Mono only for code). Sizes and weights, and where
-the biggest type goes.
+Atkinson Hyperlegible Next throughout. Page titles at step 3; the ratio itself ("3 : 1") at
+step 4, the largest type in the lab. Numbers use tabular figures.
 
 ## Layout
 
-A sketch of the main view on a phone and on a wide screen. The app comes first: one line of
-title, then the thing itself.
+```
+phone                          wide
++----------------------+       +---------------------------------------------+
+| < More labs   About  |       | < More labs                          About  |
+| Cooking reference    |       | Cooking reference                           |
+| Pairings Ratios Blends|      | Pairings   Ratios   Spice blends            |
+| [find an ingredient] |       | [search, picks,  | Goes with pork           |
+| Goes with pork       |       |  cuisine view]   | Strong  ===== soy sauce  |
+| ==== soy sauce       |       |                  | Good    ===   ginger     |
++----------------------+       +---------------------------------------------+
+```
 
-```
-phone                      wide
-+-----------------+        +---------------------------------+
-| < kylepace.dev  |        | < kylepace.dev            About |
-| Title           |        | Title                           |
-| [ the app ]     |        | [ the app, using the width ]    |
-+-----------------+        +---------------------------------+
-```
+Ratio pages: name, the ratio in big type, the proportion bar, then the calculator, why it works,
+method, swaps table, related links. Blend pages: name, what it is, amounts table, method, how it
+varies, make or buy, uses.
 
 ## Checked against the generated defaults
 
-Go through the list in the principles ("Look and feel") and note what you changed: no big
-headline over a muted sentence with a pill button, no grid of identical cards, no small labels
-above headings, no decorative dots, no monospace labels, no one-radius-everywhere.
+- No headline over a muted lede: one line of title, then the section links, then the tool.
+- Section links are plain words with a beet rule under the current one, not pills or tabs.
+- Lists are ruled rows, not card grids. The Ratios and Spice blends indexes are ruled lists too.
+- No small labels above headings, no decorative dots, no middle-dot meta lines, no monospace.
+- Two corner radii at most (2px on inputs, none on bars).

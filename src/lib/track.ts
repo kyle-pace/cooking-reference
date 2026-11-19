@@ -8,7 +8,7 @@
 // answers a real question about how the lab gets used.
 import { track as send } from 'kp-design/analytics';
 
-export const EXPERIMENT = 'lab-slug';
+export const EXPERIMENT = 'cooking-reference';
 
 export function track(event: string, properties: Record<string, unknown> = {}) {
   send(event, { experiment: EXPERIMENT, ...properties });

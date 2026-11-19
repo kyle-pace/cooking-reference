@@ -1,0 +1,68 @@
+---
+// Cooking reference, at kylepace.dev/cooking-reference/. The main page is the pairings tool:
+// pick an ingredient, see what it's cooked with. Ratios and spice blends are their own pages.
+// The look is src/styles/theme.css (plan: design/PLAN.md); the explanation is the About page.
+import LabLayout from 'kp-design/layouts/LabLayout.astro';
+import Sections from '../../components/Sections.astro';
+import '../../styles/theme.css';
+import '../../styles/pairings.css';
+---
+
+<LabLayout
+  lab={{ name: 'Cooking reference', href: '/cooking-reference/' }}
+  about="/cooking-reference/about/"
+  title="Cooking reference: flavor pairings, ratios and spice blends"
+  description="Cook without a recipe: what goes with what, from thousands of real recipes, plus the ratios behind the classics and spice blends to make yourself."
+  image="/cooking-reference/og.png"
+  imageAlt="Cooking reference: flavor pairings, ratios and spice blends. A lab on kylepace.dev."
+  themeColor={{ light: '#f2f5f1', dark: '#131917' }}
+>
+  <link slot="head" rel="preload" href="/cooking-reference/pairings.json" as="fetch" crossorigin="anonymous" />
+
+  <div class="lab-page">
+    <h1 class="title">Cooking reference</h1>
+    <Sections current="pairings" />
+
+    <div class="pairings">
+      <div class="side">
+        <div>
+          <label class="field" for="q">Find an ingredient</label>
+          <input id="q" type="search" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="miso, lamb, basil" />
+          <ul id="found" aria-label="Matching ingredients"></ul>
+        </div>
+        <section aria-labelledby="chosen-h">
+          <h2 class="small" id="chosen-h">Showing what goes with</h2>
+          <ul id="chosen"></ul>
+          <label class="field" for="cuisine">Look at</label>
+          <select id="cuisine"><option value="-1">All cooking</option></select>
+          <label class="opt"><input type="checkbox" id="staples" /> Show pantry staples (salt, sugar, oil, flour)</label>
+        </section>
+        <section class="judge-list" id="review" aria-labelledby="tests-h" hidden>
+          <h2 class="small" id="tests-h">Twenty to judge</h2>
+          <ul id="tests"></ul>
+          <p id="tally"></p>
+          <button class="plain" id="copy" type="button">Copy my verdicts</button>
+          <p id="copied" role="status"></p>
+        </section>
+      </div>
+      <div class="results">
+        <div class="head">
+          <h2 id="title">Loading the pairings</h2>
+          <p id="status" role="status" aria-live="polite"></p>
+          <div class="judge" id="judge" hidden>
+            <span>Does this list look right?</span>
+            <button class="plain" type="button" data-v="right" aria-pressed="false">Looks right</button>
+            <button class="plain" type="button" data-v="off" aria-pressed="false">Something’s off</button>
+          </div>
+        </div>
+        <div id="bands"></div>
+        <div id="after"></div>
+      </div>
+      <p class="pairing-notes" id="about-data"></p>
+    </div>
+  </div>
+</LabLayout>
+
+<script>
+  import '../../scripts/pairings.js';
+</script>

@@ -1,0 +1,41 @@
+---
+import LabLayout from 'kp-design/layouts/LabLayout.astro';
+import Sections from '../../../components/Sections.astro';
+import { blends } from '../../../data/foundations';
+import '../../../styles/theme.css';
+---
+
+<LabLayout
+  lab={{ name: 'Cooking reference', href: '/cooking-reference/' }}
+  about="/cooking-reference/about/"
+  title="Spice blends"
+  description="Spice blends from around the world to toast, grind and keep in a jar."
+  image="/cooking-reference/og.png"
+  imageAlt="Cooking reference: flavor pairings, ratios and spice blends. A lab on kylepace.dev."
+  themeColor={{ light: '#f2f5f1', dark: '#131917' }}
+>
+  <div class="lab-page">
+    <h1 class="title">Spice blends</h1>
+    <Sections current="blends" />
+    <ul class="ruled">
+      {
+        blends.map((r) => (
+          <li>
+            <h2>
+              <a href={`/cooking-reference/blends/${r.slug}/`}>{r.name}</a>
+            </h2>
+            <p>{r.summary}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="soon">More to come: five-spice, za’atar, ras el hanout, berbere, jerk seasoning and shichimi.</p>
+  </div>
+</LabLayout>
+
+<style>
+  .soon {
+    color: var(--ink-muted);
+    margin-top: var(--space-6);
+  }
+</style>

@@ -1,0 +1,141 @@
+---
+// About Cooking reference. The title, headings, order and step format follow the about-page
+// skill (.agents/skills/about-page/SKILL.md). Numbers come from the data at build time.
+import LabLayout from 'kp-design/layouts/LabLayout.astro';
+import { ratios, blends } from '../../data/foundations';
+import '../../styles/theme.css';
+// Only the totals are used; the page is prerendered, so none of this reaches the browser.
+import data from '../../../public/cooking-reference/pairings.json';
+
+const n = (x: number) => x.toLocaleString('en-US');
+const built = new Date(data.built + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+const unlabeled = data.recipes - data.labeled;
+
+const steps = [
+  {
+    name: 'Findish collects recipes from independent cooks',
+    where: 'GitHub Actions, once a week, in Findish',
+    body: [
+      `<a href="https://findish.now/">Findish</a> keeps a small index of recipes from ${data.sites} sites Kyle picked: each recipe's name, link, cuisine and the names of its ingredients, never the method. Ingredient names are matched to <a href="https://github.com/kyle-pace/kitchen-catalog">KitchenCatalog</a>, so “garlic cloves” and “minced garlic” both count as garlic.`,
+    ],
+  },
+  {
+    name: 'Count which ingredients share recipes',
+    where: 'This lab’s build script, run when Findish’s index has grown',
+    body: [
+      `The script reads that index and counts, for every pair of ingredients, how many recipes use both, on how many sites, and in which cuisines. The current counts are from ${n(data.recipes)} recipes as of ${built}, covering ${n(data.ing.length)} ingredients. The counts are saved with the lab.`,
+    ],
+  },
+  {
+    name: 'Write the ratios and spice blends',
+    where: 'This lab’s code, by hand',
+    body: [
+      `The ratio and spice blend pages are written for this lab, not collected from anywhere. There are ${ratios.length === 1 ? 'one ratio' : `${ratios.length} ratios`} and ${blends.length === 1 ? 'one blend' : `${blends.length} blends`} so far.`,
+    ],
+  },
+  {
+    name: 'Your browser scores the pairings',
+    where: 'Your phone or computer',
+    body: [
+      'When you pick an ingredient, the page works out each partner’s score from the counts and sorts them into bands. The calculator on a ratio page also runs in your browser. Nothing you pick or type is sent anywhere.',
+    ],
+  },
+];
+---
+
+<LabLayout
+  lab={{ name: 'Cooking reference', href: '/cooking-reference/' }}
+  about="/cooking-reference/about/"
+  title="About Cooking reference"
+  description="What Cooking reference is, how the pairings are worked out and what it collects."
+  image="/cooking-reference/og-about.png"
+  imageAlt="About Cooking reference: what it is and how it works, on kylepace.dev."
+  themeColor={{ light: '#f2f5f1', dark: '#131917' }}
+>
+  <article class="lab-page about-page prose">
+    <h1 class="title">About Cooking reference</h1>
+
+    <section aria-labelledby="what-title">
+      <h2 id="what-title">What it is</h2>
+      <p>
+        <a href="/cooking-reference/">Cooking reference</a> is for cooking without a recipe. It has three parts: pairings (what an ingredient
+        is cooked with, drawn from thousands of real recipes), <a href="/cooking-reference/ratios/">ratios</a> (the proportions behind the
+        classics, with a calculator) and <a href="/cooking-reference/blends/">spice blends</a> to make yourself.
+      </p>
+      <p>It’s for home cooks who already cook a little and want to understand why things work, so they can improvise.</p>
+    </section>
+
+    <section aria-labelledby="use-title">
+      <h2 id="use-title">How to use it</h2>
+      <p>
+        Find an ingredient to see what goes with it. Add up to two more to see what goes with all of them. “Look at” narrows the
+        counts to one cuisine, so you can see what pork goes with in Thai cooking rather than everywhere.
+      </p>
+      <p>
+        Partners come in bands. Strong means they’re cooked together a lot, by several cooks. Good is a clear habit. Worth trying
+        shows up together now and then. Seen on one site only is listed apart and never ranked, since it may be one cook’s habit.
+      </p>
+      <p>Each ratio and blend page links to the pairings for its ingredients, and to recipes on Findish.</p>
+    </section>
+
+    <section aria-labelledby="how-title">
+      <h2 id="how-title">How it works</h2>
+      <ol class="steps">
+        {
+          steps.map((step) => (
+            <li>
+              <h3>{step.name}</h3>
+              <p class="where">Where it runs: {step.where}.</p>
+              {step.body.map((text) => <p set:html={text} />)}
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section aria-labelledby="data-title">
+      <h2 id="data-title">Where the data comes from</h2>
+      <p>
+        The pairings come from the recipes <a href="https://findish.now/creators/">Findish searches</a>, which link back to each cook’s own
+        site. Ingredient names come from KitchenCatalog, the list shared by Kyle’s kitchen apps. The ratios and blends are common
+        cooking knowledge, written up here in our own words. Books that cover the same ground are listed on each page as further
+        reading.
+      </p>
+    </section>
+
+    <section aria-labelledby="good-title">
+      <h2 id="good-title">Good to know</h2>
+      <p>
+        A pairing’s score has two parts: how far above chance the two share recipes, and how much of the picked ingredient’s
+        cooking the other one is in. A few shared recipes count for less than many. In a combination, a partner’s score is its
+        weakest pairing with anything you picked. “Mostly Thai” means three in five of the shared recipes that have a cuisine
+        label carry that one.
+      </p>
+      <p>
+        The recipes lean East Asian and toward baking, so some Western produce looks thin. {n(unlabeled)} of the
+        {n(data.recipes)} recipes have no cuisine label, so the cuisine views see fewer recipes than the totals. Broad groups like
+        “fresh herbs” are left out in favor of their kinds, and pantry staples (salt, sugar, oil, flour) are hidden unless you ask
+        for them.
+      </p>
+      <p>Pairings say what cooks do, not why. Two ingredients can share recipes because they’re both in a common sauce.</p>
+    </section>
+
+    <section aria-labelledby="privacy-title">
+      <h2 id="privacy-title">Privacy</h2>
+      <p>
+        Analytics works the same as the rest of kylepace.dev: anonymous, no cookies, and you can turn it off (<a
+          href="https://kylepace.dev/privacy/">privacy</a
+        >). Events name the ingredients you pick by their catalog id, never anything you type. This lab doesn’t contact any other
+        sites.
+      </p>
+    </section>
+
+    <section aria-labelledby="contact-title">
+      <h2 id="contact-title">Get in touch</h2>
+      <p>
+        Questions or something that looks wrong: email <a href="mailto:mail@kylepace.net">mail@kylepace.net</a>. The code is public:{' '}
+        <a href="https://github.com/kyle-pace/cooking-reference">github.com/kyle-pace/cooking-reference</a>.
+      </p>
+    </section>
+  </article>
+</LabLayout>

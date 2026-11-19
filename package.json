@@ -1,17 +1,17 @@
 {
-  "name": "lab-slug",
+  "name": "cooking-reference",
   "version": "0.1.0",
-  "description": "Lab description.",
+  "description": "Cook without a recipe: flavor pairings, ratios and spice blends.",
   "private": true,
   "type": "module",
   "scripts": {
-    "new-lab": "node scripts/new-lab.mjs",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "npm run build && wrangler dev",
     "astro": "astro",
     "check": "node .agents/skills/page-check/check.mjs",
-    "og": "node scripts/og.mjs"
+    "og": "node scripts/og.mjs",
+    "pairings": "node scripts/build-pairings.mjs ../recipe-search"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.6",

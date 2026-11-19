@@ -1,0 +1,203 @@
+/* Ratio and blend pages: the ratio in the biggest type in the lab, a bar split into parts
+   (the one bold element), then ruled sections. */
+.foundation section {
+  margin-bottom: var(--space-12);
+}
+
+.foundation h2 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--step-1);
+}
+
+.foundation p,
+.foundation li {
+  max-width: var(--measure);
+}
+
+.big {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-4);
+  margin: 0 0 var(--space-3);
+  font-size: var(--step-4);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.big .said {
+  font-size: var(--step-0);
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.bar-parts {
+  display: flex;
+  gap: 3px;
+  max-width: 48rem;
+  min-height: 3rem;
+}
+
+.part {
+  display: flex;
+  align-items: center;
+  padding-inline: var(--space-3);
+  min-width: 0;
+  background: var(--beet-wash);
+  color: var(--ink);
+  font-weight: 700;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.part.big-part {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .part {
+    transition: flex-grow 200ms var(--ease-out);
+  }
+}
+
+.summary {
+  margin-top: var(--space-4);
+  font-size: var(--step-1);
+}
+
+.controls {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  max-width: 36rem;
+}
+
+.have {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.have label {
+  font-weight: 600;
+}
+
+.have input,
+.have select {
+  min-height: 2.75rem;
+  padding: var(--space-1) var(--space-2);
+  background: var(--bg-raised);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+}
+
+.have input {
+  width: 6rem;
+}
+
+.strength label {
+  display: block;
+  font-weight: 600;
+}
+
+.strength input {
+  width: 100%;
+  max-width: 24rem;
+  min-height: 2.75rem;
+  accent-color: var(--accent);
+}
+
+.hint {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+.amounts {
+  max-width: 36rem;
+}
+
+.amounts li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
+}
+
+.amounts li > span:first-child {
+  font-weight: 600;
+}
+
+.amounts li > span:first-child::first-letter {
+  text-transform: uppercase;
+}
+
+.makes {
+  color: var(--ink-muted);
+}
+
+.method {
+  display: grid;
+  gap: var(--space-3);
+  padding-inline-start: var(--space-6);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.swaps {
+  border-collapse: collapse;
+  min-width: 34rem;
+}
+
+.swaps th,
+.swaps td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.swaps thead th {
+  border-bottom: 2px solid var(--ink);
+}
+
+.swaps tbody th {
+  color: var(--ink-muted);
+}
+
+.cuisines {
+  margin-top: var(--space-3);
+}
+
+/* Blend pages */
+.blend-amounts {
+  max-width: 40rem;
+}
+
+.blend-amounts li {
+  display: grid;
+  grid-template-columns: minmax(7rem, auto) 1fr;
+  gap: var(--space-1) var(--space-4);
+}
+
+.blend-amounts .amt {
+  font-weight: 700;
+}
+
+.blend-amounts small {
+  display: block;
+  color: var(--ink-muted);
+}
+
+.uses {
+  padding-inline-start: var(--space-6);
+}
+
+.lead {
+  margin: 0 0 var(--space-4);
+  font-size: var(--step-1);
+}

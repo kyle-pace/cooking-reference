@@ -1,0 +1,142 @@
+---
+// One ratio: the ratio in big type, a bar split into its parts, a calculator, then why it
+// works, the method, swaps from other cuisines and where to go next.
+import LabLayout from 'kp-design/layouts/LabLayout.astro';
+import Sections from '../../../components/Sections.astro';
+import Further from '../../../components/Further.astro';
+import { ratios, type Ratio } from '../../../data/foundations';
+import { volume, teaspoons } from '../../../lib/amounts';
+import '../../../styles/theme.css';
+import '../../../styles/foundation.css';
+
+export function getStaticPaths() {
+  return ratios.map((r) => ({ params: { slug: r.slug }, props: { r } }));
+}
+const { r } = Astro.props as { r: Ratio };
+const [big, small] = r.parts;
+// The amounts shown before the calculator's script runs: for 60 ml (¼ cup) of the small part.
+const base = 60;
+const pairingIds = [...r.parts.map((p) => p.ingredient), ...r.extras.map((e) => e.ingredient)].filter((i) => i?.id);
+const calc = { slug: r.slug, parts: r.parts.map((p) => ({ key: p.key, name: p.name, per: p.per })), extras: r.extras.map((e) => ({ name: e.name, tspPer60ml: e.tspPer60ml, note: e.note || '' })) };
+---
+
+<LabLayout
+  lab={{ name: 'Cooking reference', href: '/cooking-reference/' }}
+  about="/cooking-reference/about/"
+  title={`${r.name} ratio`}
+  description={r.summary}
+  image="/cooking-reference/og.png"
+  imageAlt="Cooking reference: flavor pairings, ratios and spice blends. A lab on kylepace.dev."
+  themeColor={{ light: '#f2f5f1', dark: '#131917' }}
+>
+  <article class="lab-page foundation">
+    <h1 class="title">{r.name}</h1>
+    <Sections current="ratios" />
+
+    <section class="ratio" aria-labelledby="ratio-h" data-ratio={JSON.stringify(calc)}>
+      <h2 id="ratio-h" class="sr">The ratio</h2>
+      <p class="lead">{r.summary}</p>
+      <p class="big num">
+        <span data-per={big.key}>{big.per}</span> : {small.per}
+        <span class="said">parts {big.name} to {small.per === 1 ? 'one part' : `${small.per} parts`} {small.name}</span>
+      </p>
+      <div class="bar-parts" aria-hidden="true" data-bar>
+        <span class="part big-part" style={`flex-grow:${big.per}`}>{big.name}</span>
+        <span class="part" style={`flex-grow:${small.per}`}>{small.name}</span>
+      </div>
+    </section>
+
+    <section class="calc" aria-labelledby="calc-h">
+      <h2 id="calc-h">Amounts</h2>
+      <div class="controls" data-controls hidden>
+        <div class="have">
+          <label for="amount">I have</label>
+          <input id="amount" type="number" inputmode="decimal" min="0" step="any" value="60" />
+          <label class="sr" for="unit">Unit</label>
+          <select id="unit">
+            <option value="ml">ml</option>
+            <option value="tbsp">tbsp</option>
+            <option value="cup">cups</option>
+          </select>
+          <label class="sr" for="of">Of</label>
+          <span aria-hidden="true">of</span>
+          <select id="of">
+            {r.parts.map((p, i) => <option value={p.key} selected={i === r.parts.length - 1}>{p.name}</option>)}
+          </select>
+        </div>
+        {
+          big.range && (
+            <div class="strength">
+              <label for="per">
+                Parts {big.name} to one part {small.name}: <output id="per-out" for="per" class="num">{big.per}</output>
+              </label>
+              <input id="per" type="range" min={big.range[0]} max={big.range[1]} step="0.5" value={big.per} />
+              <p class="hint">Lower is sharper, higher is softer.</p>
+            </div>
+          )
+        }
+      </div>
+      <ul class="ruled amounts" data-out aria-live="polite">
+        {r.parts.map((p) => <li><span>{p.name}</span><span class="num">{volume((base * p.per) / small.per)}</span></li>)}
+        {r.extras.map((e) => <li><span>{e.name}</span><span class="num">{teaspoons(e.tspPer60ml)}{e.note ? `, ${e.note}` : ''}</span></li>)}
+      </ul>
+      <p class="makes" data-makes>Makes {volume((base * (big.per + small.per)) / small.per)}.</p>
+    </section>
+
+    <section aria-labelledby="why-h">
+      <h2 id="why-h">Why it works</h2>
+      {r.why.map((t) => <p>{t}</p>)}
+    </section>
+
+    <section aria-labelledby="method-h">
+      <h2 id="method-h">Method</h2>
+      <ol class="method">{r.method.map((t) => <li>{t}</li>)}</ol>
+    </section>
+
+    <section aria-labelledby="swaps-h">
+      <h2 id="swaps-h">Make it yours</h2>
+      <p>Keep the ratio and change what fills it.</p>
+      <div class="table-wrap" role="region" aria-labelledby="swaps-h" tabindex="0">
+        <table class="swaps">
+          <thead>
+            <tr>
+              <td></td>
+              {r.swaps.map((s) => <th scope="col">{s.style}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {
+              r.swapRows.map((row, i) => (
+                <tr>
+                  <th scope="row">{row}</th>
+                  {r.swaps.map((s) => <td>{s.values[i]}</td>)}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="cuisines">
+        More about these cuisines on World cuisine:{' '}
+        {r.swaps.filter((s) => s.cuisine).map((s, i, all) => (
+          <>
+            <a href={s.cuisine!.href} data-out-link="world-cuisine">{s.cuisine!.name}</a>{i < all.length - 2 ? ', ' : i === all.length - 2 ? ' and ' : '.'}
+          </>
+        ))}
+      </p>
+    </section>
+
+    <section aria-labelledby="related-h">
+      <h2 id="related-h">Related</h2>
+      <ul class="ruled">
+        {r.related.map((x) => <li><h3>{x.href ? <a href={x.href}>{x.name}</a> : x.name}</h3><p>{x.note}{x.href ? '' : ' Coming soon.'}</p></li>)}
+      </ul>
+    </section>
+
+    <Further foundation={r.slug} ingredients={pairingIds as { name: string; id: string }[]} findish={r.findish} reading={r.reading} />
+  </article>
+</LabLayout>
+
+<script>
+  import '../../../scripts/ratio';
+</script>
