@@ -1,0 +1,26 @@
+{
+  "name": "lab-slug",
+  "version": "0.1.0",
+  "description": "Lab description.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "new-lab": "node scripts/new-lab.mjs",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "npm run build && wrangler dev",
+    "astro": "astro",
+    "check": "node .agents/skills/page-check/check.mjs",
+    "og": "node scripts/og.mjs"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^14.4.6",
+    "astro": "^7.4.7",
+    "kp-design": "github:kyle-pace/kp-design#9eb530de9e16e690258e1d57425c9475f41e3f94"
+  },
+  "devDependencies": {
+    "axe-core": "^4.14.0",
+    "playwright": "^1.65.1",
+    "wrangler": "^4.158.0"
+  }
+}
