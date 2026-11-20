@@ -1,9 +1,10 @@
 ---
-// One spice blend: what it is, amounts, method, how it varies, make or buy, and uses.
+// One blend, paste or sauce: what it is, amounts, method, how it varies, make or buy, and uses.
 import LabLayout from 'kp-design/layouts/LabLayout.astro';
 import Sections from '../../../components/Sections.astro';
 import Further from '../../../components/Further.astro';
 import { blends, type Blend } from '../../../data/foundations';
+import { pairable } from '../../../lib/pairable';
 import '../../../styles/theme.css';
 import '../../../styles/foundation.css';
 
@@ -11,8 +12,13 @@ export function getStaticPaths() {
   return blends.map((b) => ({ params: { slug: b.slug }, props: { b } }));
 }
 const { b } = Astro.props as { b: Blend };
-const own = b.id ? [{ name: b.name.toLowerCase(), id: b.id }] : [];
-const parts = b.amounts.filter((a) => a.ingredient.id).map((a) => ({ name: a.ingredient.name.replace(/, .*/, ''), id: a.ingredient.id! }));
+// The name as it reads mid-sentence: without its aside, and lower case unless it starts with a place.
+const plain = b.name.replace(/, .*| \(.*/, '');
+const lower = /^(Chinese|Thai|Sichuan|Chesapeake|Cajun)/.test(plain) ? plain : plain.charAt(0).toLowerCase() + plain.slice(1);
+// The blend itself first, when the pairings know it, then what's in it.
+const goesWith = pairable([{ name: lower, id: b.id }, ...b.amounts.map((a) => a.ingredient)]);
+// What the amounts are of, when the list doesn't say.
+const AMOUNTS_NOTE = { dry: 'Whole spices unless it says ground.', herbs: '', paste: '', sauce: '' };
 ---
 
 <LabLayout
@@ -37,7 +43,7 @@ const parts = b.amounts.filter((a) => a.ingredient.id).map((a) => ({ name: a.ing
 
     <section aria-labelledby="amounts-h">
       <h2 id="amounts-h">Amounts</h2>
-      <p>Makes {b.makes}. All whole spices unless it says otherwise.</p>
+      <p>Makes {b.makes}. {AMOUNTS_NOTE[b.form]}</p>
       <ul class="ruled blend-amounts">
         {
           b.amounts.map((a) => (
@@ -75,8 +81,8 @@ const parts = b.amounts.filter((a) => a.ingredient.id).map((a) => ({ name: a.ing
 
     <Further
       foundation={b.slug}
-      ingredients={[...own, ...parts]}
-      findish={{ label: `Find recipes with ${b.name.toLowerCase()} on Findish`, query: b.id ? `with=${b.id}` : `q=${encodeURIComponent(b.name)}` }}
+      ingredients={goesWith}
+      findish={{ label: `Find recipes with ${lower} on Findish`, query: b.id ? `with=${b.id}` : `q=${encodeURIComponent(plain)}` }}
       reading={b.reading}
     />
   </article>

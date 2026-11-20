@@ -1,11 +1,14 @@
 ---
 // One ratio: the ratio in big type, a bar split into its parts, a calculator, then why it
-// works, the method, swaps from other cuisines and where to go next.
+// works, the method, swaps from other cuisines and where to go next. A ratio can have any
+// number of parts, by volume or by weight; the arithmetic is in src/lib/ratio.ts.
 import LabLayout from 'kp-design/layouts/LabLayout.astro';
 import Sections from '../../../components/Sections.astro';
 import Further from '../../../components/Further.astro';
 import { ratios, type Ratio } from '../../../data/foundations';
-import { volume, teaspoons } from '../../../lib/amounts';
+import { UNITS, toBase, fraction } from '../../../lib/amounts';
+import { perText, said, work, type Calc } from '../../../lib/ratio';
+import { pairable } from '../../../lib/pairable';
 import '../../../styles/theme.css';
 import '../../../styles/foundation.css';
 
@@ -13,11 +16,24 @@ export function getStaticPaths() {
   return ratios.map((r) => ({ params: { slug: r.slug }, props: { r } }));
 }
 const { r } = Astro.props as { r: Ratio };
-const [big, small] = r.parts;
-// The amounts shown before the calculator's script runs: for 60 ml (¼ cup) of the small part.
-const base = 60;
-const pairingIds = [...r.parts.map((p) => p.ingredient), ...r.extras.map((e) => e.ingredient)].filter((i) => i?.id);
-const calc = { slug: r.slug, parts: r.parts.map((p) => ({ key: p.key, name: p.name, per: p.per })), extras: r.extras.map((e) => ({ name: e.name, tspPer60ml: e.tspPer60ml, note: e.note || '' })) };
+const calc: Calc = {
+  slug: r.slug,
+  measure: r.measure,
+  show: r.show ?? 'parts',
+  parts: r.parts.map(({ key, name, per, gPerTsp, liquid, each }) => ({ key, name, per, gPerTsp, liquid, each })),
+  extras: r.extras.map(({ name, amount, unit, per, of, note }) => ({ name, amount, unit, per, of, note })),
+  makes: r.makes,
+  saidFixed: Boolean(r.said),
+};
+const pers = r.parts.map((p) => p.per);
+const ranged = r.parts.find((p) => p.range);
+const presets = r.adjust?.presets ?? [];
+// The amounts shown before the calculator's script runs: the ratio's own starting amount.
+const startUnit = UNITS[r.measure].find((u) => u.value === r.start.unit)!;
+const first = work(calc, pers, toBase(r.start.amount, r.start.unit), r.start.of);
+const startOf = r.parts.find((p) => p.key === r.start.of)!;
+const cuisines = r.swaps.filter((s) => s.cuisine);
+const percent = r.show === 'percent';
 ---
 
 <LabLayout
@@ -36,13 +52,22 @@ const calc = { slug: r.slug, parts: r.parts.map((p) => ({ key: p.key, name: p.na
     <section class="ratio" aria-labelledby="ratio-h" data-ratio={JSON.stringify(calc)}>
       <h2 id="ratio-h" class="sr">The ratio</h2>
       <p class="lead">{r.summary}</p>
-      <p class="big num">
-        <span data-per={big.key}>{big.per}</span> : {small.per}
-        <span class="said">parts {big.name} to {small.per === 1 ? 'one part' : `${small.per} parts`} {small.name}</span>
+      <p class:list={['big', 'num', { long: r.parts.length > 3 }]}>
+        <span class="figure">
+          {
+            percent ? (
+              <><span data-per={r.parts[1].key}>{r.parts[1].per}</span>%</>
+            ) : (
+              r.parts.map((p, i) => (
+                <>{i > 0 && <span class="colon"> : </span>}<span data-per={p.key}>{perText(p.per)}</span></>
+              ))
+            )
+          }
+        </span>
+        <span class="said" data-said>{r.said ?? said(calc)}</span>
       </p>
       <div class="bar-parts" aria-hidden="true" data-bar>
-        <span class="part big-part" style={`flex-grow:${big.per}`}>{big.name}</span>
-        <span class="part" style={`flex-grow:${small.per}`}>{small.name}</span>
+        {r.parts.map((p) => <span class="part" data-part={p.key} style={`flex-grow:${p.per}`}><span>{p.name}</span></span>)}
       </div>
     </section>
 
@@ -51,36 +76,51 @@ const calc = { slug: r.slug, parts: r.parts.map((p) => ({ key: p.key, name: p.na
       <div class="controls" data-controls hidden>
         <div class="have">
           <label for="amount">I have</label>
-          <input id="amount" type="number" inputmode="decimal" min="0" step="any" value="60" />
+          <input id="amount" type="number" inputmode="decimal" min="0" step="any" value={r.start.amount} />
           <label class="sr" for="unit">Unit</label>
           <select id="unit">
-            <option value="ml">ml</option>
-            <option value="tbsp">tbsp</option>
-            <option value="cup">cups</option>
+            {UNITS[r.measure].map((u) => <option value={u.value} selected={u.value === r.start.unit}>{u.label}</option>)}
           </select>
           <label class="sr" for="of">Of</label>
           <span aria-hidden="true">of</span>
           <select id="of">
-            {r.parts.map((p, i) => <option value={p.key} selected={i === r.parts.length - 1}>{p.name}</option>)}
+            {r.parts.map((p) => <option value={p.key} selected={p.key === r.start.of}>{p.name}</option>)}
           </select>
         </div>
         {
-          big.range && (
+          ranged && r.adjust && (
             <div class="strength">
+              {presets.length > 0 && (
+                <div class="preset">
+                  <label for="preset">Make it for</label>
+                  <select id="preset">
+                    {presets.map((s) => <option value={s.per} selected={s.per === ranged.per}>{s.name}</option>)}
+                    <option value="" selected={!presets.some((s) => s.per === ranged.per)}>My own setting</option>
+                  </select>
+                </div>
+              )}
               <label for="per">
-                Parts {big.name} to one part {small.name}: <output id="per-out" for="per" class="num">{big.per}</output>
+                {r.adjust.label}: <output id="per-out" for="per" class="num">{perText(ranged.per)}</output>
               </label>
-              <input id="per" type="range" min={big.range[0]} max={big.range[1]} step="0.5" value={big.per} />
-              <p class="hint">Lower is sharper, higher is softer.</p>
+              <input id="per" type="range" min={ranged.range![0]} max={ranged.range![1]} step={ranged.step ?? 0.5} value={ranged.per} data-key={ranged.key} />
+              <p class="hint">{r.adjust.hint}</p>
             </div>
           )
         }
       </div>
+      <p class="for" data-for>For {startUnit.value === 'cup' ? `${fraction(r.start.amount)} ${r.start.amount > 1 ? 'cups' : 'cup'}` : `${r.start.amount.toLocaleString('en-US')} ${startUnit.label}`} of {startOf.name}:</p>
       <ul class="ruled amounts" data-out aria-live="polite">
-        {r.parts.map((p) => <li><span>{p.name}</span><span class="num">{volume((base * p.per) / small.per)}</span></li>)}
-        {r.extras.map((e) => <li><span>{e.name}</span><span class="num">{teaspoons(e.tspPer60ml)}{e.note ? `, ${e.note}` : ''}</span></li>)}
+        {first.rows.map((row) => <li><span>{row.name}</span><span class="num">{row.text}</span></li>)}
       </ul>
-      <p class="makes" data-makes>Makes {volume((base * (big.per + small.per)) / small.per)}.</p>
+      <p class="makes" data-makes>{first.makes}</p>
+      {r.note && <p class="note">{r.note}</p>}
+      {
+        presets.length > 0 && ranged && (
+          <p class="note" data-presets-said>
+            {r.adjust!.label}: {presets.map((s, i) => `${perText(s.per)} for ${s.name.charAt(0).toLowerCase()}${s.name.slice(1)}${i < presets.length - 1 ? '; ' : '.'}`)}
+          </p>
+        )
+      }
     </section>
 
     <section aria-labelledby="why-h">
@@ -116,24 +156,28 @@ const calc = { slug: r.slug, parts: r.parts.map((p) => ({ key: p.key, name: p.na
           </tbody>
         </table>
       </div>
-      <p class="cuisines">
-        More about these cuisines on World cuisine:{' '}
-        {r.swaps.filter((s) => s.cuisine).map((s, i, all) => (
-          <>
-            <a href={s.cuisine!.href} data-out-link="world-cuisine">{s.cuisine!.name}</a>{i < all.length - 2 ? ', ' : i === all.length - 2 ? ' and ' : '.'}
-          </>
-        ))}
-      </p>
+      {
+        cuisines.length > 0 && (
+          <p class="cuisines">
+            More about {cuisines.length === 1 ? 'this cuisine' : 'these cuisines'} on World cuisine:{' '}
+            {cuisines.map((s, i, all) => (
+              <>
+                <a href={s.cuisine!.href} data-out-link="world-cuisine">{s.cuisine!.name}</a>{i < all.length - 2 ? ', ' : i === all.length - 2 ? ' and ' : '.'}
+              </>
+            ))}
+          </p>
+        )
+      }
     </section>
 
     <section aria-labelledby="related-h">
       <h2 id="related-h">Related</h2>
       <ul class="ruled">
-        {r.related.map((x) => <li><h3>{x.href ? <a href={x.href}>{x.name}</a> : x.name}</h3><p>{x.note}{x.href ? '' : ' Coming soon.'}</p></li>)}
+        {r.related.map((x) => <li><h3>{x.href ? <a href={x.href}>{x.name}</a> : x.name}</h3><p>{x.note}</p></li>)}
       </ul>
     </section>
 
-    <Further foundation={r.slug} ingredients={pairingIds as { name: string; id: string }[]} findish={r.findish} reading={r.reading} />
+    <Further foundation={r.slug} ingredients={pairable([...r.parts.map((p) => p.ingredient), ...r.extras.map((e) => e.ingredient)])} findish={r.findish} reading={r.reading} />
   </article>
 </LabLayout>
 

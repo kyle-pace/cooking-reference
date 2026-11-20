@@ -1,41 +1,39 @@
 ---
+// Every blend, paste and sauce, grouped by where it comes from.
 import LabLayout from 'kp-design/layouts/LabLayout.astro';
 import Sections from '../../../components/Sections.astro';
-import { blends } from '../../../data/foundations';
+import Index from '../../../components/Index.astro';
+import { blends, BLEND_REGIONS } from '../../../data/foundations';
 import '../../../styles/theme.css';
+import '../../../styles/index.css';
+
+const FORM = { dry: 'spice blend', herbs: 'herb mix', paste: 'paste', sauce: 'sauce' };
+const groups = BLEND_REGIONS.map((g) => ({
+  key: g.key,
+  name: g.name,
+  entries: blends
+    .filter((b) => b.region === g.key)
+    .map((b) => ({
+      href: `/cooking-reference/blends/${b.slug}/`,
+      name: b.name,
+      summary: b.summary,
+      text: [b.name, b.summary, b.cuisine.name, FORM[b.form], ...b.amounts.map((a) => a.ingredient.name)].join(' '),
+    })),
+}));
 ---
 
 <LabLayout
   lab={{ name: 'Cooking reference', href: '/cooking-reference/' }}
   about="/cooking-reference/about/"
-  title="Spice blends"
-  description="Spice blends from around the world to toast, grind and keep in a jar."
+  title="Blends and sauces"
+  description="Spice blends, herb mixes, pastes and sauces from around the world, with amounts, a method and what to use them on."
   image="/cooking-reference/og.png"
   imageAlt="Cooking reference: flavor pairings, ratios and spice blends. A lab on kylepace.dev."
   themeColor={{ light: '#f2f5f1', dark: '#131917' }}
 >
   <div class="lab-page">
-    <h1 class="title">Spice blends</h1>
+    <h1 class="title">Blends and sauces</h1>
     <Sections current="blends" />
-    <ul class="ruled">
-      {
-        blends.map((r) => (
-          <li>
-            <h2>
-              <a href={`/cooking-reference/blends/${r.slug}/`}>{r.name}</a>
-            </h2>
-            <p>{r.summary}</p>
-          </li>
-        ))
-      }
-    </ul>
-    <p class="soon">More to come: five-spice, za’atar, ras el hanout, berbere, jerk seasoning and shichimi.</p>
+    <Index list="blends" label="Find a blend, or an ingredient in one" groups={groups} />
   </div>
 </LabLayout>
-
-<style>
-  .soon {
-    color: var(--ink-muted);
-    margin-top: var(--space-6);
-  }
-</style>

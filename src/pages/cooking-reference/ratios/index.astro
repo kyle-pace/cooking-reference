@@ -1,15 +1,38 @@
 ---
+// Every ratio, grouped by what it makes, with its figures at the end of each row so the page
+// reads as a chart on its own.
 import LabLayout from 'kp-design/layouts/LabLayout.astro';
 import Sections from '../../../components/Sections.astro';
-import { ratios } from '../../../data/foundations';
+import Index from '../../../components/Index.astro';
+import { ratios, RATIO_GROUPS } from '../../../data/foundations';
+import { figures, said } from '../../../lib/ratio';
 import '../../../styles/theme.css';
+import '../../../styles/index.css';
+
+const groups = RATIO_GROUPS.map((g) => ({
+  key: g.key,
+  name: g.name,
+  entries: ratios
+    .filter((r) => r.group === g.key)
+    .map((r) => {
+      const calc = { show: r.show ?? ('parts' as const), parts: r.parts, measure: r.measure };
+      return {
+        href: `/cooking-reference/ratios/${r.slug}/`,
+        name: r.name,
+        summary: r.summary,
+        figure: figures(calc),
+        figureSaid: r.said ?? said(calc),
+        text: [r.name, r.summary, ...r.parts.map((p) => `${p.name} ${p.ingredient?.name ?? ''}`), ...r.extras.map((e) => e.name), ...r.swaps.map((s) => s.style)].join(' '),
+      };
+    }),
+}));
 ---
 
 <LabLayout
   lab={{ name: 'Cooking reference', href: '/cooking-reference/' }}
   about="/cooking-reference/about/"
   title="Ratios"
-  description="The proportions behind the classics, so you can make them without a recipe."
+  description="The proportions behind the classics, from bread dough to vinaigrette, each with a calculator, so you can make them without a recipe."
   image="/cooking-reference/og.png"
   imageAlt="Cooking reference: flavor pairings, ratios and spice blends. A lab on kylepace.dev."
   themeColor={{ light: '#f2f5f1', dark: '#131917' }}
@@ -17,25 +40,6 @@ import '../../../styles/theme.css';
   <div class="lab-page">
     <h1 class="title">Ratios</h1>
     <Sections current="ratios" />
-    <ul class="ruled">
-      {
-        ratios.map((r) => (
-          <li>
-            <h2>
-              <a href={`/cooking-reference/ratios/${r.slug}/`}>{r.name}</a>
-            </h2>
-            <p>{r.summary}</p>
-          </li>
-        ))
-      }
-    </ul>
-    <p class="soon">More to come: pie dough, bread, custard, brine, quick pickles and rice.</p>
+    <Index list="ratios" label="Find a ratio" groups={groups} />
   </div>
 </LabLayout>
-
-<style>
-  .soon {
-    color: var(--ink-muted);
-    margin-top: var(--space-6);
-  }
-</style>

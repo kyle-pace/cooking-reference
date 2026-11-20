@@ -27,17 +27,17 @@ const steps = [
     ],
   },
   {
-    name: 'Write the ratios and spice blends',
+    name: 'Write the ratios, blends and sauces',
     where: 'This lab’s code, by hand',
     body: [
-      `The ratio and spice blend pages are written for this lab, not collected from anywhere. There are ${ratios.length === 1 ? 'one ratio' : `${ratios.length} ratios`} and ${blends.length === 1 ? 'one blend' : `${blends.length} blends`} so far.`,
+      `The ratio pages and the blend and sauce pages are written for this lab, not collected from anywhere. They start from Kyle’s own cooking notes and common kitchen knowledge, and the less familiar blends were compared with several published versions. There are ${ratios.length} ratios and ${blends.length} blends, pastes and sauces so far.`,
     ],
   },
   {
     name: 'Your browser scores the pairings',
     where: 'Your phone or computer',
     body: [
-      'When you pick an ingredient, the page works out each partner’s score from the counts and sorts them into bands. The calculator on a ratio page also runs in your browser. Nothing you pick or type is sent anywhere.',
+      'When you pick an ingredient, the page works out each partner’s score from the counts and sorts them into bands. The calculator on a ratio page and the filters on the lists also run in your browser. Nothing you type is sent anywhere.',
     ],
   },
 ];
@@ -60,7 +60,7 @@ const steps = [
       <p>
         <a href="/cooking-reference/">Cooking reference</a> is for cooking without a recipe. It has three parts: pairings (what an ingredient
         is cooked with, drawn from thousands of real recipes), <a href="/cooking-reference/ratios/">ratios</a> (the proportions behind the
-        classics, with a calculator) and <a href="/cooking-reference/blends/">spice blends</a> to make yourself.
+        classics, with a calculator) and <a href="/cooking-reference/blends/">blends and sauces</a> to make yourself: spice blends, herb mixes, pastes and sauces from around the world.
       </p>
       <p>It’s for home cooks who already cook a little and want to understand why things work, so they can improvise.</p>
     </section>
@@ -74,6 +74,11 @@ const steps = [
       <p>
         Partners come in bands. Strong means they’re cooked together a lot, by several cooks. Good is a clear habit. Worth trying
         shows up together now and then. Seen on one site only is listed apart and never ranked, since it may be one cook’s habit.
+      </p>
+      <p>
+        On a ratio page, type how much you have of any one part and the rest follows. Doughs, brines and cures are worked out by
+        weight, sauces and grains by spoons and cups. Where a ratio has one part cooks adjust, like the water in bread, a slider
+        changes it. On the Ratios and the Blends and sauces lists, the box at the top narrows the list by name or ingredient.
       </p>
       <p>Each ratio and blend page links to the pairings for its ingredients, and to recipes on Findish.</p>
     </section>
@@ -97,8 +102,9 @@ const steps = [
       <h2 id="data-title">Where the data comes from</h2>
       <p>
         The pairings come from the recipes <a href="https://findish.now/creators/">Findish searches</a>, which link back to each cook’s own
-        site. Ingredient names come from KitchenCatalog, the list shared by Kyle’s kitchen apps. The ratios and blends are common
-        cooking knowledge, written up here in our own words. Books that cover the same ground are listed on each page as further
+        site. Ingredient names come from KitchenCatalog, the list shared by Kyle’s kitchen apps. The ratios, blends and sauces are common
+        cooking knowledge, written up here in our own words. Blends vary from kitchen to kitchen, so treat the amounts as a
+        place to start. Books that cover the same ground are listed on each page as further
         reading.
       </p>
     </section>

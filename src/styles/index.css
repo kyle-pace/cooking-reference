@@ -1,0 +1,122 @@
+/* The Ratios and the Blends and sauces indexes: a filter, then groups of ruled rows. On a wide
+   screen each group's name sits in the left margin, like the row labels of a chart, and the
+   rows run in two columns. */
+.find {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.find label {
+  font-weight: 600;
+}
+
+.find input {
+  flex: 1 1 12rem;
+  max-width: 24rem;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: var(--space-1) var(--space-2);
+  background: var(--bg-raised);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+}
+
+.count {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+.jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-6);
+  margin: 0 0 var(--space-8);
+  padding: 0;
+  list-style: none;
+}
+
+.jump a {
+  display: inline-block;
+  padding-block: var(--space-2);
+}
+
+.group {
+  margin-bottom: var(--space-12);
+  scroll-margin-top: var(--space-4);
+}
+
+.group > h2 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--step-1);
+}
+
+/* Name, then the figures pushed to the end of the row; they drop to their own line when the
+   two don't fit side by side (a narrow phone, or large text). */
+.entries > li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 var(--space-4);
+  position: relative;
+}
+
+.entries h3 {
+  font-size: var(--step-0);
+}
+
+.entries h3 a {
+  display: inline-block;
+  padding-block: var(--space-1);
+}
+
+.entries .figure {
+  color: var(--accent);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.entries p {
+  flex: 1 1 100%;
+  margin-top: 0;
+}
+
+.none button {
+  padding: var(--space-1) var(--space-2);
+  min-height: 2.75rem;
+  background: none;
+  border: 0;
+  color: var(--accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
+@media (min-width: 56rem) {
+  .group {
+    display: grid;
+    grid-template-columns: 12rem 1fr;
+    gap: 0 var(--space-8);
+    align-items: start;
+  }
+
+  .group > h2 {
+    padding-top: var(--space-3);
+    border-top: 2px solid var(--ink);
+  }
+
+  /* Two columns of rows whose rules line up, because both columns share one grid. */
+  .entries {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+    column-gap: var(--space-8);
+    border-top: 2px solid var(--ink);
+  }
+
+  .entries > li {
+    align-content: start;
+  }
+}

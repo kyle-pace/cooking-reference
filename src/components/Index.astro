@@ -1,0 +1,60 @@
+---
+// The index of a section: a filter, links to jump to each group, then every group as a ruled
+// list. Used by the Ratios page and the Blends and sauces page. Without JavaScript the filter
+// stays hidden and the page is a plain grouped list.
+interface Entry {
+  href: string;
+  name: string;
+  summary: string;
+  /** Shown at the end of the row in the strong color: a ratio's figures. */
+  figure?: string;
+  /** What that figure says, for screen readers. */
+  figureSaid?: string;
+  /** Everything the filter should match: the name, the summary, the ingredients. */
+  text: string;
+}
+interface Props {
+  list: 'ratios' | 'blends';
+  label: string;
+  groups: { key: string; name: string; entries: Entry[] }[];
+}
+const { list, label, groups } = Astro.props;
+const total = groups.reduce((n, g) => n + g.entries.length, 0);
+---
+
+<div class="index" data-index={list}>
+  <div class="find" data-find hidden>
+    <label for="filter">{label}</label>
+    <input id="filter" type="search" autocomplete="off" autocapitalize="none" spellcheck="false" />
+    <p class="count" role="status" data-count data-total={total}></p>
+  </div>
+  <nav aria-label="Groups" data-jump>
+    <ul class="jump">
+      {groups.map((g) => <li><a href={`#${g.key}`}>{g.name}</a></li>)}
+    </ul>
+  </nav>
+  {
+    groups.map((g) => (
+      <section class="group" aria-labelledby={`${g.key}-h`} id={g.key} data-group>
+        <h2 id={`${g.key}-h`}>{g.name}</h2>
+        <ul class="ruled entries">
+          {g.entries.map((e) => (
+            <li data-text={e.text.toLowerCase()}>
+              <h3>
+                <a href={e.href}>{e.name}</a>
+              </h3>
+              {e.figure && <span class="figure num" aria-hidden={e.figureSaid ? 'true' : undefined}>{e.figure}</span>}
+              {e.figureSaid && <span class="sr">{e.figureSaid}.</span>}
+              <p>{e.summary}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+  <p class="none" data-none hidden>Nothing here matches. <button type="button" data-clear>Show everything</button></p>
+</div>
+
+<script>
+  import '../scripts/filter';
+</script>
