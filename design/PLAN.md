@@ -54,7 +54,7 @@ phone                          wide
 +----------------------+       +---------------------------------------------+
 | < More labs   About  |       | < More labs                          About  |
 | Cooking reference    |       | Cooking reference                           |
-| Pairings Ratios Blends|      | Pairings   Ratios   Spice blends            |
+| Pairings Ratios Blends|      | Pairings   Ratios   Blends and sauces       |
 | [find an ingredient] |       | [search, picks,  | Goes with pork           |
 | Goes with pork       |       |  cuisine view]   | Strong  ===== soy sauce  |
 | ==== soy sauce       |       |                  | Good    ===   ginger     |

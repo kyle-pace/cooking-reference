@@ -1,6 +1,6 @@
 ---
 // Cooking reference, at kylepace.dev/cooking-reference/. The main page is the pairings tool:
-// pick an ingredient, see what it's cooked with. Ratios and spice blends are their own pages.
+// pick an ingredient, see what it's cooked with. Ratios and blends are their own pages.
 // The look is src/styles/theme.css (plan: design/PLAN.md); the explanation is the About page.
 import LabLayout from 'kp-design/layouts/LabLayout.astro';
 import Sections from '../../components/Sections.astro';
@@ -11,10 +11,10 @@ import '../../styles/pairings.css';
 <LabLayout
   lab={{ name: 'Cooking reference', href: '/cooking-reference/' }}
   about="/cooking-reference/about/"
-  title="Cooking reference: flavor pairings, ratios and spice blends"
-  description="Cook without a recipe: what goes with what, from thousands of real recipes, plus the ratios behind the classics and spice blends to make yourself."
+  title="Cooking reference: flavor pairings, ratios, blends and sauces"
+  description="Cook without a recipe: what goes with what, from thousands of real recipes, plus the ratios behind the classics and blends and sauces to make yourself."
   image="/cooking-reference/og.png"
-  imageAlt="Cooking reference: flavor pairings, ratios and spice blends. A lab on kylepace.dev."
+  imageAlt="Cooking reference: flavor pairings, ratios, blends and sauces. A lab on kylepace.dev."
   themeColor={{ light: '#f2f5f1', dark: '#131917' }}
 >
   <link slot="head" rel="preload" href="/cooking-reference/pairings.json" as="fetch" crossorigin="anonymous" />
