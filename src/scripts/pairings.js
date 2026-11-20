@@ -216,6 +216,5 @@ const $ = (id) => /** @type {any} */ (document.getElementById(id));
     $('about-data').innerHTML = `From ${d.recipes.toLocaleString()} recipes on the ${d.sites} sites Findish searches, as of ${esc(d.built)}. <a href="/cooking-reference/about/#use-title">How the bands work</a>.`;
     picked = readHash();
     if (picked.length) sent('Picked Ingredient', picked[0], document.referrer.includes('/cooking-reference/') ? 'reference' : 'link');
-    if (!picked.length && byId.has('pork')) picked = [byId.get('pork')];
     render();
   }).catch(() => { $('title').textContent = "The pairings didn't load"; $('status').textContent = 'Reload the page to try again.'; });
