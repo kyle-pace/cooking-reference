@@ -1,12 +1,13 @@
 // The pairings tool. Carried over from the Flavor pairings test page (November 2026).
 // Scoring is described above link(); the data is built by scripts/build-pairings.mjs.
 import { track } from '../lib/track';
+import { link as scoreLink, linksOf, STAPLE_AT, THIN } from '../lib/pairing-score.js';
 
 const $ = (id) => /** @type {any} */ (document.getElementById(id));
   const TESTS = ['tomatoes', 'miso', 'lamb', 'basil', 'cilantro', 'lemons', 'limes', 'ginger', 'kimchi', 'butter', 'salmon', 'tofu', 'mushrooms', 'chocolate', 'rosemary', 'pork', 'coconut-milk', 'cumin', 'eggs', 'pecans'];
   // [key, heading, the line beside it]
   const BANDS = [['strong', 'Strong', 'Cooked together a lot, by several cooks'], ['good', 'Good', 'A clear habit'], ['try', 'Worth trying', 'Shows up together now and then'], ['one', 'Seen on one site only', "One cook's habit, so not counted as a pairing yet"]];
-  const MIN_CO = 3, SHOWN = 14, SHOWN_ONE = 5, MAX = 3;
+  const SHOWN = 14, SHOWN_ONE = 5, MAX = 3;
   let data = null, byId = new Map(), links = [], picked = [], open = new Set(), scope = -1;
   const store = {
     read() { try { return JSON.parse(localStorage.getItem('cooking-reference-verdicts') || '{}') || {}; } catch { return {}; } },
@@ -29,34 +30,11 @@ const $ = (id) => /** @type {any} */ (document.getElementById(id));
   function prepare(d) {
     data = d;
     d.ing.forEach((g, i) => byId.set(g.id, i));
-    links = d.ing.map(() => new Map());
-    for (const p of d.pairs) { links[p[0]].set(p[1], p); links[p[1]].set(p[0], p); }
+    links = linksOf(d);
   }
 
-  /**
-   * How well b goes with a, seen from a's side, in all recipes or in one cuisine.
-   * The score is how far above chance they share recipes (thin evidence counts for less:
-   * the shared recipes are discounted by their own square root), plus credit for how much
-   * of a's cooking b is in. One site alone never makes a pairing.
-   */
-  function link(a, b) {
-    const p = links[a].get(b);
-    if (!p) return null;
-    let N = data.recipes, na = data.ing[a].n, nb = data.ing[b].n, co = p[2];
-    if (scope >= 0) {
-      N = data.cuisines[scope].n; na = data.ing[a].c[scope]; nb = data.ing[b].c[scope]; co = 0;
-      for (let i = 0; i < p[5].length; i += 2) if (p[5][i] === scope) co = p[5][i + 1];
-    }
-    if (co < MIN_CO || !na || !nb) return null;
-    const share = co / na, lift = share / (nb / N);
-    if (lift < 1.15) return null;
-    const pxy = (co - Math.sqrt(co)) / N;
-    const score = Math.log(pxy / ((na / N) * (nb / N))) / -Math.log(pxy) + 0.25 * Math.sqrt(share);
-    let mostly = '';
-    if (scope < 0 && p[4] >= 3) for (let i = 0; i < p[5].length; i += 2) if (p[5][i + 1] / p[4] >= 0.6) mostly = data.cuisines[p[5][i]].name;
-    const band = p[3] < 2 ? (score >= 0.14 ? 'one' : '') : score >= 0.38 && share >= 0.04 ? 'strong' : score >= 0.25 && share >= 0.02 ? 'good' : score >= 0.14 ? 'try' : '';
-    return { a, c: b, score, co, share, sites: p[3], mostly, band };
-  }
+  /** How well b goes with a, in the cuisine being looked at (src/lib/pairing-score.js). */
+  const link = (a, b) => scoreLink(data, links, a, b, scope);
 
   /** Partners of everything picked: each one's weakest link, strongest first. */
   function partners(sel, staples) {
@@ -87,13 +65,14 @@ const $ = (id) => /** @type {any} */ (document.getElementById(id));
     const staples = $('staples').checked;
     const names = picked.map((p) => lower(data.ing[p].name));
     const where = scope < 0 ? '' : ` in ${data.cuisines[scope].name} recipes`;
+    const thin = scope >= 0 && data.cuisines[scope].n < THIN;
     $('chosen').innerHTML = picked.length
       ? picked.map((p, i) => `<li><span>${esc(data.ing[p].name)} <small>${inScope(p).toLocaleString()} ${scope < 0 ? '' : esc(data.cuisines[scope].name) + ' '}recipes</small></span><button type="button" data-drop="${i}"><span aria-hidden="true">×</span><span class="sr">Remove ${esc(data.ing[p].name)}</span></button></li>`).join('')
       : '<li><span>Nothing yet. Find an ingredient above.</span></li>';
     const all = partners(picked, staples);
     const counted = all.filter((x) => x.band !== 'one').length;
     $('title').textContent = picked.length ? `Goes with ${listOf(names)}${where}` : 'Pick an ingredient';
-    $('status').textContent = picked.length ? `${counted} ${counted === 1 ? 'pairing' : 'pairings'}${picked.length > 1 ? ' that go with all of them' : ''}.` : '';
+    $('status').textContent = picked.length ? `${counted} ${counted === 1 ? 'pairing' : 'pairings'}${picked.length > 1 ? ' that go with all of them' : ''}.${thin ? ` Only ${data.cuisines[scope].n} ${data.cuisines[scope].name} recipes so far, so treat these as rough.` : ''}` : '';
     const single = picked.length === 1 && scope < 0 ? data.ing[picked[0]].id : null;
     $('judge').hidden = !single || !review;
     if (single) for (const b of $('judge').querySelectorAll('button')) b.setAttribute('aria-pressed', String(verdicts[single] === b.dataset.v));
@@ -105,9 +84,18 @@ const $ = (id) => /** @type {any} */ (document.getElementById(id));
       html += `<section class="band" aria-labelledby="band-${bi}"><div class="band-head"><h3 id="band-${bi}">${label}</h3><p>${gloss}</p></div><ul class="rows">` + cut.map((x) => row(x, key === 'one')).join('') + '</ul>' +
         (rows.length > cut.length ? `<button class="plain more" type="button" data-open="${bi}">Show all ${rows.length}</button>` : '') + '</section>';
     });
-    $('bands').innerHTML = html;
+    $('bands').innerHTML = cuisineStaples(staples) + html;
     $('after').innerHTML = after(counted, staples);
     if (review) renderTests();
+  }
+
+  /** In one cuisine: what's in most of its recipes, which is why those aren't listed as pairings. */
+  function cuisineStaples(pantry) {
+    if (scope < 0 || !picked.length) return '';
+    const c = data.cuisines[scope];
+    const top = data.ing.map((g, i) => ({ i, r: g.c[scope] / c.n })).filter((x) => x.r >= STAPLE_AT && !picked.includes(x.i) && (pantry || !data.ing[x.i].staple)).sort((a, b) => b.r - a.r);
+    if (!top.length) return '';
+    return `<p class="staples-line">In most ${esc(c.name)} recipes, so not listed as pairings: ${top.map((x) => `${esc(lower(data.ing[x.i].name))} (${pct(x.r)})`).join(', ')}.</p>`;
   }
 
   function row(x, one) {
@@ -212,7 +200,7 @@ const $ = (id) => /** @type {any} */ (document.getElementById(id));
 
   fetch('/cooking-reference/pairings.json').then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); }).then((d) => {
     prepare(d);
-    $('cuisine').innerHTML = `<option value="-1">All cooking (${d.recipes.toLocaleString()} recipes)</option>` + d.cuisines.map((c, i) => `<option value="${i}">${esc(c.name)} (${c.n.toLocaleString()})</option>`).join('');
+    $('cuisine').innerHTML = `<option value="-1">All cooking (${d.recipes.toLocaleString()} recipes)</option>` + d.cuisines.map((c, i) => `<option value="${i}">${esc(c.name)} (${c.n.toLocaleString()}${c.n < THIN ? ', few recipes' : ''})</option>`).join('');
     $('about-data').innerHTML = `From ${d.recipes.toLocaleString()} recipes on the ${d.sites} sites Findish searches, as of ${esc(d.built)}. <a href="/cooking-reference/about/#use-title">How the bands work</a>.`;
     picked = readHash();
     if (picked.length) sent('Picked Ingredient', picked[0], document.referrer.includes('/cooking-reference/') ? 'reference' : 'link');

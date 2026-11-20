@@ -17,6 +17,7 @@ npm run build    # must pass before pushing
 npm run check    # accessibility, sideways scrolling, JavaScript weight, screenshots
 npm run og       # re-render the share cards from design/og*.html
 npm run pairings # recount the pairings from Findish's index (needs ../recipe-search with its index built)
+npm run benchmark # check the pairings against the Ahn et al. flavor network recipes (CC BY 4.0)
 ```
 
 Adding a ratio is an entry in one of the `src/data/ratios-*.ts` files, and a blend or sauce in one of the `blends-*.ts` files; its page, index line and links are built from that. `src/data/types.ts` says what an entry holds, and the build fails if one is put together wrong.

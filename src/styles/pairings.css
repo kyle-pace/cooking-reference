@@ -71,3 +71,4 @@ label.field { display: block; font-weight: 600; margin-bottom: 0.35rem; }
 .pairings h2.small { font-size: 1rem; }
 #chosen { margin: 0.5rem 0 1rem; }
 .pairing-notes { grid-column: 1 / -1; margin: 0; padding-top: 1.25rem; border-top: 1px solid var(--line); color: var(--ink-muted); max-width: var(--measure); }
+.staples-line { margin: 0 0 1.25rem; color: var(--ink-muted); max-width: 65ch; }

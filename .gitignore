@@ -19,3 +19,6 @@ npm-debug.log*
 
 # npm run check output (screenshots)
 .check/
+
+# benchmark dataset (npm run benchmark)
+.cache/
